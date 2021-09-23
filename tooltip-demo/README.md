@@ -1,5 +1,7 @@
 # ToolTip Component Demo
 
+View demo <https://tooltip-demo.netlify.app/>
+
 1. Clone project <https://github.com/Ismail-Opatola/deskpass-test>
 
 2. Install dependencies `yarn install` or `npm install`
