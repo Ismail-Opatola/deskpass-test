@@ -70,15 +70,15 @@ app.use("", (req, res, next) => {
 // Prom Client
 // -----------
 
-// Create a Registry which registers the metrics
+// Creates a Registry which registers the metrics
 const register = new client.Registry();
 
-// Add a default label which is added to all metrics
+// Adds a default label which is added to all metrics
 register.setDefaultLabels({
   app: "node-proxy-server",
 });
 
-// Enable the collection of default metrics
+// Enables the collection of default metrics
 // client.collectDefaultMetrics({ register });
 
 /**
@@ -110,7 +110,7 @@ const totalHttpRequestDuration = new client.Gauge({
   labelNames: ["method", "path"],
 });
 
-// Register multiple registries on the same endpoint
+// Registers multiple registries on the same endpoint
 const mergedRegistries = client.Registry.merge([register, client.register]);
 
 app.use("", (req, res, next) => {
@@ -122,12 +122,14 @@ app.use("", (req, res, next) => {
   const ip = req.ip;
 
   res.on("finish", () => {
+    // count number of request
     totalHttpRequestCount.labels(req.method, route).inc();
-    totalHttpRequestDuration
-      .labels(req.method, route)
-      .inc(new Date().valueOf() - end());
-    // End timer and add labels
-    end({ route, code: res.statusCode, method: req.method, ip });
+    // measure duration
+    totalHttpRequestDuration.labels(req.method, route).inc(
+      new Date().valueOf() -
+        // End timer and add labels
+        end({ route, code: res.statusCode, method: req.method, ip })
+    );
   });
 
   next();
