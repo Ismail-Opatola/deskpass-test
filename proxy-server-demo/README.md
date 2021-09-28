@@ -134,4 +134,10 @@ Output:
 
     Bad request
 
-## Monitoring
+## Setup Application Monitoring with Prom-client, Prommetheus and Grafana
+
+Install Node.js Prometheus client and collect default metrics
+
+    npm install prom-client
+
+### Expose and customize server metrics
