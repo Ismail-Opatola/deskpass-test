@@ -24,9 +24,12 @@
 
 // Imports
 const express = require("express");
+/** HTTP request logger middleware */
 const morgan = require("morgan");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const client = require("prom-client");
+/** Proxy framework */
+const { createProxyMiddleware } = require("http-proxy-middleware"); 
+/** Prometheus nodejs client library */
+const client = require("prom-client"); 
 
 // ----------------------
 // Create Express Server
@@ -261,7 +264,8 @@ app.get(["/", "/info"], (req, res, next) => {
  * Metrics - GET endpoint
  * ---
  * Get all registerd metrics.
- * This API can be consumed by Prometheus.
+ * (Optional) This API can be consumed and visualized by connecting Prometheus
+ * and Grafana service.
  */
 app.get("/metrics", async (req, res) => {
   // Return all metrics the Prometheus exposition format
