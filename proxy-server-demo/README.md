@@ -141,3 +141,111 @@ Install Node.js Prometheus client and collect default metrics
     npm install prom-client
 
 ### Expose and customize server metrics
+
+Import dependency
+
+    ...
+    const client = require("prom-client");
+
+
+    // Creates a Registry which registers the metrics
+    const register = new client.Registry();
+
+    // Adds a default label which is added to all metrics
+    register.setDefaultLabels({
+      app: "node-proxy-server",
+    });
+
+    // Enables the collection of default metrics
+    // client.collectDefaultMetrics({ register });
+
+    /**
+     * httpRequestDurationMicroseconds
+     * ---
+     * This histogram metric measures request duration under 10 seconds
+     */
+    const httpRequestDurationMicroseconds = new client.Histogram({
+      name: "http_request_duration_seconds",
+      help: "Duration of HTTP requests in microseconds",
+      labelNames: ["method", "route", "code", "ip"],
+      buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10],
+    });
+
+    /**
+     * totalHttpRequestCount
+     * ---
+     * This Counter metric measures total request count made to a each route
+     */
+    const totalHttpRequestCount = new client.Counter({
+      name: "http_total_count",
+      help: "total request number",
+      labelNames: ["method", "path"],
+    });
+
+    /**
+     * totalHttpRequestDuration
+     * ---
+     * This Counter metric measures response time of last request
+     */
+    const totalHttpRequestDuration = new client.Gauge({
+      name: "http_total_duration",
+      help: "the last duration or response time of last request",
+      labelNames: ["method", "path"],
+    });
+
+    /**
+     * Registers multiple registries on the same endpoint
+     * i.e [totalHttpRequestDuration,
+     * totalHttpRequestCount,
+     * httpRequestDurationMicroseconds]
+     */
+    const mergedRegistries = client.Registry.merge([register, client.register]);
+
+    /**
+     * Custom Middelware
+     * ---
+     * Captures httpRequestDurationMicroseconds
+     * Captures totalHttpRequestCount
+     * Captures totalHttpRequestDuration
+     */
+    app.use("", (req, res, next) => {
+      // Start the timer
+      const end = httpRequestDurationMicroseconds.startTimer();
+
+      // Retrieve route from request object
+      const route = req.url;
+      const ip = req.ip;
+
+      // listen for finished response event and execute callback
+      res.on("finish", () => {
+        // count number of request
+        totalHttpRequestCount.labels(req.method, route).inc();
+        // measure duration
+        totalHttpRequestDuration.labels(req.method, route).inc(
+          new Date().valueOf() -
+            // End timer and add labels
+            end({ route, code: res.statusCode, method: req.method, ip })
+        );
+      });
+
+      next();
+    });
+
+Expose server metrics
+
+    /**
+     * Metrics - GET endpoint
+     * ---
+     * Get all registerd metrics.
+     * (Optional) This API can be consumed and visualized by connecting
+     * Prometheus and Grafana service.
+     */
+    app.get("/metrics", async (req, res) => {
+      // Return all metrics the Prometheus exposition format
+      res.setHeader("Content-Type", register.contentType);
+      res.end(await mergedRegistries.metrics());
+    });
+
+Test run proxy server
+
+    node .\index.js
