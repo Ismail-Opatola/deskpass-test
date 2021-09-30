@@ -4,7 +4,7 @@ const HOST = "localhost";
 const PORT = 8001;
 
 const books = JSON.stringify([
-  { title: "The Seven Minutes", author: "	Irving Wallace", year: 1969 },
+  { title: "The Seven Minutes", author: "Irving Wallace", year: 1969 },
   {
     title: "Half of a Yellow Sun",
     author: "Chimamanda Ngozi Adichie",

@@ -18,7 +18,6 @@
  *
  * Proxy use-case:
  * Authorization - Forward only authorized requests to access a service.
- * Load balancing - Distribute inbound requests traffic equally among instances.
  * Logging - Log every requests going to a Back End API service.
  */
 
@@ -27,9 +26,9 @@ const express = require("express");
 /** HTTP request logger middleware */
 const morgan = require("morgan");
 /** Proxy framework */
-const { createProxyMiddleware } = require("http-proxy-middleware"); 
+const { createProxyMiddleware } = require("http-proxy-middleware");
 /** Prometheus nodejs client library */
-const client = require("prom-client"); 
+const client = require("prom-client");
 
 // ----------------------
 // Create Express Server
