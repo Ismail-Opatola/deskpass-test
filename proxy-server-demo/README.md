@@ -315,16 +315,16 @@ Install prom-client
 
 ### Expose and customize server metrics
 
-open prom-client/index.js and import prom-client
+open proxy-server/index.js and import prom-client
 
     ...
     const client = require("prom-client");
 
-Creates a Registry which registers the metrics we intend to collect
+Create a Registry which registers the metrics we intend to collect
 
     const register = new client.Registry();
 
-Adds a default label which is added to all metrics. This is a unique identifier-prefix added to the label.
+Add a default label prefix to all metrics.
 
     register.setDefaultLabels({
       app: "node-proxy-server",
@@ -336,7 +336,7 @@ Adds a default label which is added to all metrics. This is a unique identifier-
 
 #### Setup custom metrics
 
-We will measure 3 things
+We intend to capture 3 things during server runtime
 
 - HTTP request duration per microseconds.
 - Total HTTP request count.
