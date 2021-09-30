@@ -10,20 +10,23 @@ Proxy is an intermediary application. It sits between two (or more) services, pr
 - **Load balancing** - Distribute inbound requests traffic equally among instances.
 - **Logging** - Log every requests going to a Back End API service.
 
-**Initialize the project** -
+**Initialize project**:
 
+    mkdir proxy-server
+    cd proxy-server
     npm init -y
 
-This will generate a package.json file which will contain a basic project configuration.
+This will generate a `package.json` file which will contain a basic project configuration.
 
-**Install dependencies:**
-We need a few packages to make the proxy work:
+**Install dependencies**:
+
+We need a few packages to make our proxy server:
 
 - _express_: Minimalist web framework
 - _http-proxy-middleware_: Simple proxy framework
 - (optional) _morgan_ - HTTP request logger middleware
 
-which we can install by running:
+Install these packeges by running:
 
     npm install express http-proxy-middleware morgan
 
@@ -43,10 +46,12 @@ Create basic express server
     // Configuration
     const PORT = 3000;
     const HOST = "localhost";
+
     const API_SERVICE_URLS = {
       authors: "http://localhost:8002",
       books: "http://localhost:8001",
     };
+
     const SUPPORTED_HTTP_METHODS = ['GET'];
 
     /**
@@ -78,7 +83,11 @@ Create basic express server
       res.send("This is a proxy service which proxies to Books and Authors APIs.");
     });
 
-Add proxy endpoints with redefined path to "/" each server root. We want to proxy all requests starting with "/books", "/authors" to the books-server and authors-server respectively. Ensure both servers are live.
+`Http-proxy-middleware` has an api which can be used to intercept request/response to how server called `createProxyMiddleware`, the middleware is responsible for proxying incoming request, with it behavoir/lifecycle defined by us.
+
+For our example, our proxy-server will handles connection between the client and two backend services; **books** and **authors**.
+
+Using the `createProxyMiddleware`, we want to proxy all requests starting with `/books`, `/authors` to the **books-server** and **authors-server** respectively.
 
     app.use(
       "/books",
@@ -102,13 +111,136 @@ Add proxy endpoints with redefined path to "/" each server root. We want to prox
       })
     );
 
+We've add proxy endpoints and redefined each path to the root of each server.
+
+For example:
+
+When a request is made to the proxy-server to get authors data, `localhost://8000/authors/100`.
+
+`/authors` will be replaced with `/` and forwared to the authors endpoint, such that `localhost://8000/authors/100` becomes `<author-service-endpoint>/100`
+
 start the configured server
 
     app.listen(PORT, HOST, () => {
       console.log(`Proxy server is running on http://${HOST}:${PORT}`);
     });
 
-Test the proxy server
+### Create a minimal Authors and Books service.
+
+#### Authors service
+
+Create a new directory
+
+    cd ../
+    mdir authors-server
+    cd authors-server
+
+Create `index.js` file and add code
+
+    const http = require("http");
+
+    const HOST = "localhost";
+    const PORT = 8002;
+
+    const authors = JSON.stringify([
+      {
+        name: "Irving Wallace",
+        countryOfBirth: "United States",
+        yearOfBirth: 1916,
+      },
+      {
+        name: "Chimamanda Ngozi Adichie",
+        countryOfBirth: "Nigeria",
+        yearOfBirth: 1977,
+      },
+    ]);
+
+    /**
+     * Request Handler
+     * @param {object} req
+     * @param {object} res
+     *
+     * handle an incoming HTTP request and return an HTTP response
+     */
+    const requestListener = function (req, res) {
+      res.setHeader("Content-Type", "application/json");
+      if (req.url === "/") {
+        res.writeHead(200);
+        res.end(authors);
+      } else {
+        res.writeHead(404);
+        res.end(JSON.stringify({ error: "Resource not found" }));
+      }
+    };
+
+    const server = http.createServer(requestListener);
+
+    server.listen(PORT, HOST, () => {
+      console.log(`Authors Server is running on http://${HOST}:${PORT}`);
+    });
+
+Run the authors server
+
+    node .\authors server\index.js
+
+#### Books service
+
+Create a new directory
+
+    cd ../
+    mdir books-server
+    cd books-server
+
+Create `index.js` file and add code
+
+    const http = require("http");
+
+    const HOST = "localhost";
+    const PORT = 8001;
+    
+    const books = JSON.stringify([
+      { title: "The Seven Minutes", author: "	Irving Wallace", year: 1969 },
+      {
+        title: "Half of a Yellow Sun",
+        author: "Chimamanda Ngozi Adichie",
+        year: 2006,
+      },
+    ]);
+    
+    /**
+     * Request Handler
+     * @param {object} req
+     * @param {object} res
+     *
+     * handle an incoming HTTP request and return an HTTP response
+     */
+    const requestListener = function (req, res) {
+      if (req.url === "/") {
+        res.writeHead(200);
+        res.end(books);
+      } else {
+        res.writeHead(404);
+        res.end(JSON.stringify({ error: "Resource not found" }));
+      }
+    };
+    
+    const server = http.createServer(requestListener);
+    
+    server.listen(PORT, HOST, () => {
+      console.log(`Books Server is running on http://${HOST}:${PORT}`);
+    });
+
+Run the books server
+
+    node .\books-server\index.js
+
+### Test the proxy server
+
+Start the proxy server
+
+    node.\proxy-server\index.js
+
+Ensure both both services are live and test request
 
     curl localhost:8000/books
 
@@ -116,17 +248,30 @@ Output:
 
     Forbidden
 
-The Authorization middleware implemented requires that every request contains an Authorization Header
+This is because the authorization middleware implemented requires that every request contains an authorization header.
 
-Add custom header to your request from the browser
+    ...
+    /**
+      * Authorization: authorization/permission handling middleware.
+      * ---
+      * Sends 403 (Forbidden) if the Authorization Header is missing.
+      */
+    app.use("", (req, res, next) => {
+      if (req.headers.authorization) {
+        next();
+      } else {
+        res.sendStatus(403);
+      }
+    });
+    ...
 
-    <https://infoheap.com/chrome-add-custom-http-request-headers/>
-
-Alternatively, use curl
+You can add [custom header to your request from the browser](https://infoheap.com/chrome-add-custom-http-request-headers/) or use `curl`
 
     curl -H "Authorization: ismail" localhost:8000/books
 
-Test unsupported methods denial
+You should get a `200` status response with books data in JSON format.
+
+### (Optional) Test unsupported  HTTP methods denial
 
     curl -X POST -H "Authorization: ismail" --data '{name: "Stephen King",countryOfBirth: "United States",yearOfBirth: 1947,}' http://localhost:8000/authors
 
