@@ -16,20 +16,22 @@ The react project was created using `create-react-app` and `styled-components`
 
 ## Project Development
 
-1. Clone project
+Clone project
 
-   git clone https://github.com/Ismail-Opatola/deskpass-test
+    git clone https://github.com/Ismail-Opatola/deskpass-test
 
-2. Navigate to the tooltip-demo directory
+Navigate to the tooltip-demo directory
 
-   cd deskpass-test/tooltip-demo
+    cd deskpass-test/tooltip-demo
 
-3. Open the `package.json` file to view project dependencies.
+Open the `package.json` file to view project dependencies.
 
-4. Install dependencies.
+Install dependencies.
 
-   `yarn install` or `npm install`
+    `yarn install` or `npm install`
 
-5. Run dev mode `yarn start` or `npm install`
+Run application
 
-6. Navigate to <http://localhost:3000>
+    `yarn start` or `npm install`
+
+Navigate to <http://localhost:3000> to view the tooltip application
