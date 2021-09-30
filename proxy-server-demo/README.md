@@ -15,7 +15,7 @@ This Node Proxy is an intermediary application.
 - It processes/modifies the requests and responses in both directions.
 - The Application is capable of monitoring http request and response.
 
-### Currently captured metrics:
+### Currently captured metrics
 
 - Duration of HTTP requests in microseconds
 - Total request number
