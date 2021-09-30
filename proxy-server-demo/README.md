@@ -108,9 +108,9 @@ Open the _index.js_ file and add the necessary imports:
 
 #### Implement proxy
 
-`Http-proxy-middleware` has an api which can be used to intercept request/response to how server called `createProxyMiddleware`, the middleware is responsible for proxying incoming request, with it behavoir/lifecycle defined by us.
+`Http-proxy-middleware` has an api which can be used to intercept request/response to our server called `createProxyMiddleware`. The middleware is responsible for proxying incoming request, with the behavior/lifecycle defined by us.
 
-For our example, our proxy-server will handles connection between the client and two backend services; **books** and **authors**.
+For this example, our proxy-server will handle connection between the client and two backend services; **books** and **authors**.
 
 Using the `createProxyMiddleware`, we want to proxy all requests starting with `/books`, `/authors` to the **books-server** and **authors-server** respectively.
 
@@ -136,15 +136,15 @@ Using the `createProxyMiddleware`, we want to proxy all requests starting with `
       })
     );
 
-We've add proxy endpoints and redefined each path to the root of each server.
+We've added proxy endpoints and redefined each path to the root of each server.
 
 **For example**:
 
 When a request is made to the proxy-server to get authors data, `localhost://8000/authors/100`.
 
-`/authors` will be replaced with `/` and forwared to the authors endpoint, such that `localhost://8000/authors/100` becomes `<author-service-endpoint>/100`
+`/authors` will be replaced with `/` and forward to the authors endpoint, such that `localhost://8000/authors/100` becomes `<author-service-endpoint>/100`
 
-start the configured server
+Start the configured server
 
     app.listen(PORT, HOST, () => {
       console.log(`Proxy server is running on http://${HOST}:${PORT}`);
