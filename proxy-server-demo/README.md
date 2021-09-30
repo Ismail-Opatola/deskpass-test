@@ -1,14 +1,37 @@
 # Node Proxy server
 
-## What is a Proxy
+## Requirements
 
-Proxy is an intermediary application. It sits between two (or more) services, processes or modifies the requests and responses in both directions.
+- Node.js version 8 or higher - Javascript runtime environment
+- NPM OR Yarn - Package management tool
 
-## Use cases
+## Summary
+
+This Node Proxy is an intermediary application.
+
+### Features
+
+- It sits between the client and two backend services; books and authors.
+- It processes/modifies the requests and responses in both directions.
+- The Application is capable of monitoring http request and response.
+
+### Currently captured metrics:
+
+- Duration of HTTP requests in microseconds
+- Total request number
+- Response time of last request
+
+  Captured metrics are exposed at `localhost://8000/metrics` endpoint.
+  This allows the use of Prometheus and Grafana service to store and visualize metrics.
+
+### Proxy use-case
 
 - **Authorization** - Forward only authorized requests to access a service.
-- **Load balancing** - Distribute inbound requests traffic equally among instances.
 - **Logging** - Log every requests going to a Back End API service.
+
+## The Project Developement
+
+---
 
 **Initialize project**:
 
@@ -38,7 +61,7 @@ Open the _index.js_ file and add the necessary imports:
     const morgan = require("morgan");
     const { createProxyMiddleware } = require('http-proxy-middleware');
 
-Create basic express server
+#### Create basic express server
 
     // Create Express Server
     const app = express();
@@ -83,6 +106,8 @@ Create basic express server
       res.send("This is a proxy service which proxies to Books and Authors APIs.");
     });
 
+#### Implement proxy
+
 `Http-proxy-middleware` has an api which can be used to intercept request/response to how server called `createProxyMiddleware`, the middleware is responsible for proxying incoming request, with it behavoir/lifecycle defined by us.
 
 For our example, our proxy-server will handles connection between the client and two backend services; **books** and **authors**.
@@ -113,7 +138,7 @@ Using the `createProxyMiddleware`, we want to proxy all requests starting with `
 
 We've add proxy endpoints and redefined each path to the root of each server.
 
-For example:
+**For example**:
 
 When a request is made to the proxy-server to get authors data, `localhost://8000/authors/100`.
 
@@ -125,7 +150,7 @@ start the configured server
       console.log(`Proxy server is running on http://${HOST}:${PORT}`);
     });
 
-### Create a minimal Authors and Books service.
+### Create a minimal Authors and Books service
 
 #### Authors service
 
@@ -197,16 +222,16 @@ Create `index.js` file and add code
 
     const HOST = "localhost";
     const PORT = 8001;
-    
+
     const books = JSON.stringify([
-      { title: "The Seven Minutes", author: "	Irving Wallace", year: 1969 },
+      { title: "The Seven Minutes", author: "Irving Wallace", year: 1969 },
       {
         title: "Half of a Yellow Sun",
         author: "Chimamanda Ngozi Adichie",
         year: 2006,
       },
     ]);
-    
+
     /**
      * Request Handler
      * @param {object} req
@@ -223,9 +248,9 @@ Create `index.js` file and add code
         res.end(JSON.stringify({ error: "Resource not found" }));
       }
     };
-    
+
     const server = http.createServer(requestListener);
-    
+
     server.listen(PORT, HOST, () => {
       console.log(`Books Server is running on http://${HOST}:${PORT}`);
     });
@@ -271,7 +296,7 @@ You can add [custom header to your request from the browser](https://infoheap.co
 
 You should get a `200` status response with books data in JSON format.
 
-### (Optional) Test unsupported  HTTP methods denial
+### (Optional) Test unsupported HTTP methods denial
 
     curl -X POST -H "Authorization: ismail" --data '{name: "Stephen King",countryOfBirth: "United States",yearOfBirth: 1947,}' http://localhost:8000/authors
 
@@ -281,29 +306,45 @@ Output:
 
 ## Setup Application Monitoring with Prom-client, Prommetheus and Grafana
 
-Install Node.js Prometheus client and collect default metrics
+**Prom-client** is a Prometheus client library for Node.js, used to collect application metrics. It provides the building blocks to export metrics to Prometheus via the pull and push methods and supports all Prometheus metric types such as histogram, summaries, gauges and counters.
 
+Install prom-client
+
+    cd proxy-server/
     npm install prom-client
 
 ### Expose and customize server metrics
 
-Import dependency
+open prom-client/index.js and import prom-client
 
     ...
     const client = require("prom-client");
 
+Creates a Registry which registers the metrics we intend to collect
 
-    // Creates a Registry which registers the metrics
     const register = new client.Registry();
 
-    // Adds a default label which is added to all metrics
+Adds a default label which is added to all metrics. This is a unique identifier-prefix added to the label.
+
     register.setDefaultLabels({
       app: "node-proxy-server",
     });
 
-    // Enables the collection of default metrics
-    // client.collectDefaultMetrics({ register });
+(optional) Enable the collection of default metrics
 
+    client.collectDefaultMetrics({ register });
+
+#### Setup custom metrics
+
+We will measure 3 things
+
+- HTTP request duration per microseconds.
+- Total HTTP request count.
+- Total HTTP request duration.
+
+The metrics captured depends on what is critical to the business/application model.
+
+    ...
     /**
      * httpRequestDurationMicroseconds
      * ---
@@ -376,7 +417,7 @@ Import dependency
       next();
     });
 
-Expose server metrics
+#### Expose server metrics
 
     /**
      * Metrics - GET endpoint
@@ -391,6 +432,18 @@ Expose server metrics
       res.end(await mergedRegistries.metrics());
     });
 
-Test run proxy server
+### View application metrics
+
+Start the proxy server
 
     node .\index.js
+
+To test the app monitoring, open your browser and make multiple requests to `localhost://8000/authors`, `localhost://8000/books`. Alternatively, use `curl`.
+
+    curl -H "Authorization: ismail" localhost:8000/books
+
+Navigate to `localhost://8000/metrics` to view captured metrics.
+
+    curl -H "Authorization: ismail" localhost://8000/metrics
+
+Captured metrics are exposed at `localhost://8000/metrics` endpoint. This allows the use of Prometheus and Grafana service to store and visualize metrics.
