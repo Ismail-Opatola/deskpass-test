@@ -131,8 +131,9 @@ function App() {
           </div>
         </div>
         <p>
-          When overflow is detected, tooltip auto-flips the opposite direction
-          of it wrapped element.
+          When overflow is detected, tooltip automatically flips the opposite
+          direction or fallback to the next available placement relative to it
+          wrapped element within the viewport.
         </p>
       </section>
       <section>
@@ -150,6 +151,16 @@ function App() {
         >
           <Button type="button">Arrow</Button>
         </Tooltip>
+
+        <div
+          className="code-block"
+        >
+          <code>
+            <pre>{`<Tooltip title="demo" placement={direction} arrow>`}</pre>
+            <pre>{` <Button type="button">Arrow</Button>`}</pre>
+            <pre>{`</Tooltip>`}</pre>
+          </code>
+        </div>
       </section>
 
       <section>
