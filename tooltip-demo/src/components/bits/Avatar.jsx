@@ -1,56 +1,5 @@
-// @ts-nocheck
-import styled from "styled-components";
 import PropTypes from "prop-types";
-
-const Wrapper = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  font-size: 1.25rem;
-  line-height: 1;
-  border-radius: 50%;
-  overflow: hidden;
-  user-select: none;
-
-  ${(props) =>
-    /* If prop size = "sm", set width and height of 30px */
-    props.size === "sm"
-      ? `
-    width: 30px;
-    height: 30px;
-  `
-      : /* If prop size = "md", set width and height of 40px */
-      props.size === "md"
-      ? `
-    width: 40px;
-    height: 40px;
-  `
-      : /* If prop size = "lg", set width and height of 60px */
-
-      props.size === "lg"
-      ? `
-    width: 60px;
-    height: 60px;
-  `
-      : /* default size, set width and height of 20px */
-        `
-    width: 20px;
-    height: 20px;
-  `}
-
-  & img,
-  & .avatar-img {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    object-fit: cover;
-    color: transparent;
-    text-indent: 10000px;
-  }
-`;
+import styles from "./Avatar.module.css";
 
 /**
  * Avatar component
@@ -65,20 +14,25 @@ const Wrapper = styled.div`
  * * Use `title` to label your Avatar
  * * Use the `imgProps` to specify img properties such as `alt`, `src`, `className`, `custom props`. Note: custom props will be forwarded to the image component.
  */
+
 const Avatar = ({ size, title, imgProps }) => {
   return (
-    <Wrapper size={size}>
+    <div className={`${styles.avatar} ${styles[`avatar-size--${size}`]}`}>
       {imgProps.src ? (
         <img {...imgProps} alt={imgProps.alt} />
       ) : (
-        <span className="avatar-img">{title}</span>
+        <span>{title}</span>
       )}
-    </Wrapper>
+    </div>
   );
 };
 
+Avatar.defaultProps = {
+  size: "default",
+};
+
 Avatar.propTypes = {
-  size: PropTypes.oneOf(["sm", "md", "lg"]),
+  size: PropTypes.oneOf(["sm", "md", "lg", "default"]),
   title: PropTypes.string,
   imgProps: PropTypes.shape({
     alt: PropTypes.string,

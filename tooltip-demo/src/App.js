@@ -1,72 +1,168 @@
 // @ts-nocheck
 import "./App.css";
-import ToolTip from "./components/bits/Tooltip";
 import { useState } from "react";
 import Button from "./components/bits/Button";
 import Avatar from "./components/bits/Avatar";
+import Tooltip from "./components/bits/Tooltip";
 
 function App() {
   const [direction, setDirection] = useState("left");
 
   /**
    * Tooltip placement handler - Control tooltip direction.
-   * @param {string} direction - one of "left | top | right | bottom"
+   * @param {string} direction - one of `left-start` | `left` | `left-end` | `top-start` | `top` | `top-end` | `right-start` | `right` | `right-end` | `bottom-start` | `bottom` | `bottom-end`
    */
-  const handlePlacement = (direction) => setDirection(direction);
-  /**
-   * Change Tooltip direction to the left
-   */
-  const placeLeft = () => handlePlacement("left");
-  /**
-   * Change Tooltip direction to the right
-   */
-  const placeRight = () => handlePlacement("right");
-  /**
-   * Change Tooltip direction to the top
-   */
-  const placeTop = () => handlePlacement("top");
-  /**
-   * Change Tooltip direction to Bottom
-   */
-  const placeBottom = () => handlePlacement("bottom");
+  const handlePlacement = (e, direction) => {
+    e.stopPropagation();
+    setDirection(direction);
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <ToolTip title="Left Anchor" placement={direction}>
-          <Button type="button" onClick={() => placeLeft()}>
-            LEFT
-          </Button>
-        </ToolTip>
-        <ToolTip title="Top Anchor" placement={direction}>
-          <Button type="button" onClick={() => placeTop()}>
-            TOP
-          </Button>
-        </ToolTip>
-        <ToolTip
-          title="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur, adipisci eum maxime facere amet iste nisi, dolorum iure, dignissimos possimus reprehenderit porro officiis in corrupti voluptatem debitis cumque culpa ipsam?"
+      <section>
+        <h5>Positioned tooltips</h5>
+        <p>
+          Click to switch <code>Tooltip</code> direction.
+        </p>
+
+        <div className="display-grid place-content-center">
+          <div>
+            <Tooltip title="Top Start Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "top-start")}
+              >
+                TOP-START
+              </Button>
+            </Tooltip>
+            <Tooltip title="Top Anchor" placement={direction}>
+              <Button type="button" onClick={(e) => handlePlacement(e, "top")}>
+                TOP
+              </Button>
+            </Tooltip>
+            <Tooltip title="Top End Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "top-end")}
+              >
+                TOP-END
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
+        <div className="display-grid justify-space-between grid-template-columns-1fr max-w-500 mx-auto">
+          <div className="display-flex flex-direction-column align-start">
+            <Tooltip title="Left Start Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "left-start")}
+              >
+                LEFT-START
+              </Button>
+            </Tooltip>
+            <Tooltip title="Left Anchor" placement={direction}>
+              <Button type="button" onClick={(e) => handlePlacement(e, "left")}>
+                LEFT
+              </Button>
+            </Tooltip>
+            <Tooltip title="Left Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "left-end")}
+              >
+                LEFT-END
+              </Button>
+            </Tooltip>
+          </div>
+
+          <div className="display-flex flex-direction-column align-end">
+            <Tooltip title="Right Start Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "right-start")}
+              >
+                RIGHT-START
+              </Button>
+            </Tooltip>
+            <Tooltip title="Right Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "right")}
+              >
+                RIGHT
+              </Button>
+            </Tooltip>
+            <Tooltip title="Right End Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "right-end")}
+              >
+                RIGHT-END
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
+        <div className="display-grid place-content-center">
+          <div>
+            <Tooltip title="Bottom Start Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "bottom-start")}
+              >
+                BOTTOM-START
+              </Button>
+            </Tooltip>
+            <Tooltip title="Bottom Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "bottom")}
+              >
+                BOTTOM
+              </Button>
+            </Tooltip>
+            <Tooltip title="Bottom End Anchor" placement={direction}>
+              <Button
+                type="button"
+                onClick={(e) => handlePlacement(e, "bottom-end")}
+              >
+                BOTTOM-END
+              </Button>
+            </Tooltip>
+          </div>
+        </div>
+        <p>
+          When overflow is detected, tooltip auto-flips the opposite direction
+          of it wrapped element.
+        </p>
+      </section>
+      <section>
+        <h5>
+          Arrow <code>Tooltip</code>
+        </h5>
+        <p>
+          You can use the <code>arrow</code> prop to give the tooltip component
+          an arrow indicating which element it refers to.
+        </p>
+        <Tooltip
+          title="Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam consequatur autem, hic, numquam aspernatur atque architecto dolore illum praesentium repudiandae a, est quisquam nesciunt voluptatibus minima similique perspiciatis mollitia blanditiis?"
           placement={direction}
+          arrow
         >
-          <Button type="button" onClick={() => placeRight()}>
-            RIGHT
-          </Button>
-        </ToolTip>
-        <ToolTip title="Bottom Anchor" placement={direction}>
-          <Button type="button" onClick={() => placeBottom()}>
-            BOTTOM
-          </Button>
-        </ToolTip>
-        <ToolTip title="Tooltip with bubble" placement={direction} arrow>
-          <Button type="button" onClick={() => placeBottom()}>
-            Arrow
-          </Button>
-        </ToolTip>
-        <ToolTip title="Main" placement={direction}>
+          <Button type="button">Arrow</Button>
+        </Tooltip>
+      </section>
+
+      <section>
+        <h5>Examples</h5>
+        <p>
+          More examples of <code>Tooltip</code> usecase.
+        </p>
+        <Tooltip title="Main" placement={direction} arrow>
           <Button variant="circle" type="button">
             DP
           </Button>
-        </ToolTip>
-        <ToolTip title="Menu" placement={direction}>
+        </Tooltip>
+        <Tooltip title="Menu" placement={direction} arrow>
           <Button variant="circle" type="button">
             <svg
               className="icon"
@@ -78,8 +174,8 @@ function App() {
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
             </svg>
           </Button>
-        </ToolTip>
-        <ToolTip title="Notifications" placement={direction}>
+        </Tooltip>
+        <Tooltip title="Notifications" placement={direction} arrow>
           <Button variant="circle" type="button">
             <svg
               className="icon"
@@ -91,20 +187,19 @@ function App() {
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
             </svg>
           </Button>
-        </ToolTip>
-        <ToolTip title="John Doe" placement={direction}>
+        </Tooltip>
+        <Tooltip title="John Doe" placement={direction} arrow>
           <Button variant="circle" type="button">
             <Avatar
               title="John Doe"
               imgProps={{
                 alt: "John Doe profile picture",
                 src: "sample-image.jpg",
-                className: "avatar-img",
               }}
             />
           </Button>
-        </ToolTip>
-        <ToolTip title="John Doe" placement={direction}>
+        </Tooltip>
+        <Tooltip title="John Doe" placement={direction} arrow>
           <Button variant="circle" type="button">
             <Avatar
               size="md"
@@ -112,12 +207,11 @@ function App() {
               imgProps={{
                 alt: "John Doe profile picture",
                 src: "sample-image.jpg",
-                className: "avatar-img",
               }}
             />
           </Button>
-        </ToolTip>
-        <ToolTip title="John Doe" placement={direction}>
+        </Tooltip>
+        <Tooltip title="John Doe" placement={direction} arrow>
           <Button variant="circle" type="button">
             <Avatar
               size="lg"
@@ -125,12 +219,11 @@ function App() {
               imgProps={{
                 alt: "John Doe profile picture",
                 src: "sample-image.jpg",
-                className: "avatar-img",
               }}
             />
           </Button>
-        </ToolTip>
-      </header>
+        </Tooltip>
+      </section>
     </div>
   );
 }
