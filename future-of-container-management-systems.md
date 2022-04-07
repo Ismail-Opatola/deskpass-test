@@ -10,7 +10,7 @@ I think container management systems will be quite relevant. However, the future
 
 Kubernetes may become control plane for abstractions, and it's the CRDs of these abstractions that developers would focus on.
 
-Kubernetes control planes may manage resources inside or even outside kubernetes as crossplane manages cloud infrastructure.
+Kubernetes control planes may manage resources inside or even outside kubernetes as Crossplane manages cloud infrastructure from multiple cloud service providers.
 
 Another possibility is that we may see a shift to a different runtime. Function-as-a-service or Serverless may replace kubernetes as the de facto standard runtime for distributed applications.
 
