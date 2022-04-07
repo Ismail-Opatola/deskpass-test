@@ -6,7 +6,7 @@ Systems like Kubernetes and Docker Swarm are the end result of years and years o
 
 ## Answer
 
-I think container management systems, will be quite relevant. However, the future of these systems such as kubernetes is in the custom resource definitions (CRDs) and abstractrions which we build on top of them and make available to users through CRDs. 
+I think container management systems will be quite relevant. However, the future of these systems such as kubernetes is in the custom resource definitions (CRDs) and abstractrions which we build on top of them and make available to users through CRDs.
 
 Kubernetes may become control plane for abstractions, and it's the CRDs of these abstractions that developers would focus on.
 
