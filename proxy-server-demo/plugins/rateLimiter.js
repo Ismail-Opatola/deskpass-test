@@ -1,7 +1,5 @@
-// @ts-nocheck
-
 /**
- *  Rate limiter module helps prevent brute-forcing attacks. It enables specifying how many requests a specific IP address can make during a specified time period
+ *  Rate limiter module helps prevent brute-forcing attacks. It enables specifying how many requests a specific IP address can make during a specified time period.
  *
  * It is a technique that allows us to handle user requests based on some specified constraint such that:
  *
@@ -16,9 +14,6 @@ const redis = require("redis");
 const errorHandler = require("../lib/errorHandler");
 
 const redisClient = redis.createClient();
-const WINDOW_SIZE_IN_HOURS = 24;
-const MAX_WINDOW_REQUEST_COUNT = 100;
-const WINDOW_LOG_INTERVAL_IN_HOURS = 1;
 
 (async () => {
   await redisClient.connect();
@@ -26,15 +21,18 @@ const WINDOW_LOG_INTERVAL_IN_HOURS = 1;
 
 /**
  * Limit an IP's allowed max request to `100` within `24hour` window.
- * Uses `redis` to cache request count by IP. 
+ * Uses `redis` to cache request count by IP.
  * Sets `X-Rate-Limit-Limit` and `X-Rate-Limit-Remaining` headers on every request.
  */
 const rateLimiter = async (req, res, next) => {
+  const WINDOW_SIZE_IN_HOURS = 24;
+  const MAX_WINDOW_REQUEST_COUNT = 100;
+  const WINDOW_LOG_INTERVAL_IN_HOURS = 1;
+
   try {
     // check that redis client exists
     if (!redisClient) {
       throw new Error("Redis client does not exist!");
-      process.exit(1);
     }
 
     // check that ip address exists

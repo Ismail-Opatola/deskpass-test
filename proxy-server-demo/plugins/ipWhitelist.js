@@ -1,12 +1,12 @@
 const errorHandler = require("../lib/errorHandler");
 
-// Allowed IP addresses
-const WHITELISTED_IPS = ["127.0.0.1"];
-
 /**
  * Block unauthorized Ip address 
  */
 const ipWhitelist = async (req, res, next) => {
+  // Allowed IP addresses
+  const WHITELISTED_IPS = ["127.0.0.1"];
+
   if (process.env.NODE_ENV !== "production") {
     return next();
   }
