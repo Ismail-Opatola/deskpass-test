@@ -2,20 +2,19 @@
 /**
  * Remove block quotes from string
  * @param {string} str
+ * @param {boolean} removeAll
  * @returns {string}
  *
- * The function checks for single or double quotes character
- * at the beginnig and end of a given string
- * and replace the character with an empty string
+ * `stripQuotes` accepts two arguments, first the string and second a boolean (option to remove all quotes).
  *
- * The function uses Javascript string `replaceAll` method with
- * a regular expression literal as it 1st argument and
- * a replacer string (empty string) as 2nd argument
+ * If `removeAll` is true, `stripQuotes` will strip all single or double quotes character in the entire string 
+ * except for where there is an apostrophy followed by letter S i.e `'s`
  *
- * ----
+ * If `removeAll` is false, `stripQuotes` will strip only the boundary quotes.
+ * It checks for single or double quotes character at the beginnig and end of a given string and replace the character with an empty string.
  *
  * Regular expression literal consist of a pattern enclosed between slashes,
- * * `/` Open. Indecates the start of a regular expression,
+ * * `/` Open. Indicates the start of a regular expression,
  * * `^` matches the beginning of the string
  * * `$` matches the end of the string
  * * `[]` matches any character in the set
@@ -27,11 +26,19 @@
  *
  * Implementation:
  * ---------------
+ * If `removeAll`, Replace all single/double quote occurrence with an empty string,
+ * where ([",']+)([",'']+) i.e empty single or double qoutes exist in pears
+ * or where [']+(?=[a-r|t-z]) i.e remove aposthrophy preceding any letter but the letter s
+ * or where `^['|"]` i.e "string begins with single quote or double quote"
+ * or where `(['|"]$)` i.e "string ends with single quote or double quote"
+ * Else
  * Replace all single/double quote occurrence with an empty string,
  * where `^['|"]` i.e "string begins with single quote or double quote"
  * or where `(['|"]$)` i.e "string ends with single quote or double quote"
+ * 
+ * This approach helps solve an edge case where we intend to strip more than the boundary qoutes of a block quotes. We can easily specify to removeAll qoutes. 
  *
- * node backward compatibility, avoid using `replaceAll` instead use `replace` with a global flag
+ * Note: For Node backward compatibility, avoid using `replaceAll` instead use `replace` with a global flag
  */
 
 const stripQuotes = (str = "", removeAll = false) => {
