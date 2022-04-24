@@ -12,7 +12,7 @@ View demo <https://tooltip-demo.netlify.app/>
 
 This project creates and demostrate using a tooltip component to provide contextual discriptions to wrapped elements.
 
-The react project was created using `create-react-app` and `styled-components`
+The react project was created using `create-react-app`
 
 ## Project Development
 
